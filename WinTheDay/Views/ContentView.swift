@@ -28,7 +28,7 @@ struct ContentView: View {
     @State private var selectedTab: Tab = .timer
     @State private var showSettings = false
 
-    private let accentColor = Color(hue: 35/360, saturation: 0.8, brightness: 0.55)
+    private let accentColor: Color = .appAccent
 
     var body: some View {
         VStack(spacing: 0) {

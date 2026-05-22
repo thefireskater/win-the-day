@@ -7,7 +7,7 @@ struct TimerView: View {
     @ObservedObject var viewModel: TimerViewModel
     @State private var isEditingDuration = false
 
-    private let accentColor = Color(hue: 35/360, saturation: 0.8, brightness: 0.55)
+    private let accentColor: Color = .appAccent
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,10 +29,8 @@ struct TimerView: View {
                 .padding(.bottom, 12)
         }
         .padding(.horizontal, 24)
-        .onChange(of: viewModel.remainingSeconds) { oldValue, newValue in
-            if newValue <= 0 && viewModel.timerState == .stopped {
-                viewModel.saveBlockOnCompletion(modelContext: modelContext)
-            }
+        .onAppear {
+            viewModel.modelContext = modelContext
         }
     }
 
@@ -132,7 +130,7 @@ struct TimerView: View {
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
 
-                Button(action: { viewModel.stop(modelContext: modelContext) }) {
+                Button(action: { viewModel.stop() }) {
                     Label("Stop", systemImage: "stop.fill")
                         .font(.system(size: 14, weight: .medium))
                 }
@@ -147,7 +145,7 @@ struct TimerView: View {
                 .buttonStyle(.plain)
                 .foregroundStyle(accentColor)
 
-                Button(action: { viewModel.stop(modelContext: modelContext) }) {
+                Button(action: { viewModel.stop() }) {
                     Label("Stop", systemImage: "stop.fill")
                         .font(.system(size: 14, weight: .medium))
                 }

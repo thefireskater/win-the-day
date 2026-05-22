@@ -18,6 +18,7 @@
 		8BE0C9075BC0CA33070E4F8A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64F57661CE26D156A823F9C /* ContentView.swift */; };
 		8FBF1B3E05142D5C66C0C160 /* DailyProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330B16073321C8BCEEADF464 /* DailyProgressBar.swift */; };
 		A11E4AC2EC077ECC0240DB14 /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E611520D408B3843CF4ED1 /* TimerViewModel.swift */; };
+		CFCA33633A805A39B144B03A /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5AC58AB7A53B6E0BEA69D2 /* Theme.swift */; };
 		F635B13CD76B62B67290916E /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C66C32FD88CDAC0400542E /* TimerView.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		2BF94A54CF8F8BB3EE2AB9DE /* WinTheDayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinTheDayApp.swift; sourceTree = "<group>"; };
 		330B16073321C8BCEEADF464 /* DailyProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyProgressBar.swift; sourceTree = "<group>"; };
 		3360015B35FFD5F4E38993AE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		4A5AC58AB7A53B6E0BEA69D2 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		95C66C32FD88CDAC0400542E /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		99B1503DA2579743E4675689 /* BlockLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockLogView.swift; sourceTree = "<group>"; };
 		A64F57661CE26D156A823F9C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 		6873C1265C9BABA48A09AF62 /* WinTheDay */ = {
 			isa = PBXGroup;
 			children = (
+				4A5AC58AB7A53B6E0BEA69D2 /* Theme.swift */,
 				2BF94A54CF8F8BB3EE2AB9DE /* WinTheDayApp.swift */,
 				95A29BDEE3C9FDACBC08ED0A /* Models */,
 				439FC452FB1B8AE8433865C7 /* ViewModels */,
@@ -160,6 +163,7 @@
 				543833B8002813C7F08EE8E1 /* DurationPickerView.swift in Sources */,
 				66310899DC8DAB6E285FC48B /* SettingsView.swift in Sources */,
 				436F19AD3E4CFE9D8DE98330 /* StatsView.swift in Sources */,
+				CFCA33633A805A39B144B03A /* Theme.swift in Sources */,
 				F635B13CD76B62B67290916E /* TimerView.swift in Sources */,
 				A11E4AC2EC077ECC0240DB14 /* TimerViewModel.swift in Sources */,
 				768E2489B32A655C30270E08 /* UserSettings.swift in Sources */,

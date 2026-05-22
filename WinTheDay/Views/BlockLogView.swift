@@ -9,35 +9,26 @@ struct BlockLogView: View {
 
     var onSwitchToTimer: () -> Void
 
-    private var groupedBlocks: [(String, [Block])] {
+    private func sectionKey(for block: Block) -> String {
         let calendar = Calendar.current
-        let grouped = Dictionary(grouping: blocks) { block -> String in
-            if calendar.isDateInToday(block.startTime) {
-                return "Today"
-            } else if calendar.isDateInYesterday(block.startTime) {
-                return "Yesterday"
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateStyle = .medium
-                return formatter.string(from: block.startTime)
-            }
+        if calendar.isDateInToday(block.startTime) {
+            return "Today"
+        } else if calendar.isDateInYesterday(block.startTime) {
+            return "Yesterday"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            return formatter.string(from: block.startTime)
         }
+    }
 
-        let order = blocks.map { block -> String in
-            if calendar.isDateInToday(block.startTime) {
-                return "Today"
-            } else if calendar.isDateInYesterday(block.startTime) {
-                return "Yesterday"
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateStyle = .medium
-                return formatter.string(from: block.startTime)
-            }
+    private var groupedBlocks: [(String, [Block])] {
+        let grouped = Dictionary(grouping: blocks) { sectionKey(for: $0) }
+        var seen = Set<String>()
+        let uniqueOrder = blocks.compactMap { block -> String? in
+            let key = sectionKey(for: block)
+            return seen.insert(key).inserted ? key : nil
         }
-        let uniqueOrder = order.reduce(into: [String]()) { result, key in
-            if !result.contains(key) { result.append(key) }
-        }
-
         return uniqueOrder.compactMap { key in
             guard let values = grouped[key] else { return nil }
             return (key, values)
@@ -96,7 +87,7 @@ struct BlockLogView: View {
                 onSwitchToTimer()
             }
             .buttonStyle(.plain)
-            .foregroundStyle(Color(hue: 35/360, saturation: 0.8, brightness: 0.55))
+            .foregroundStyle(Color.appAccent)
             Spacer()
         }
     }

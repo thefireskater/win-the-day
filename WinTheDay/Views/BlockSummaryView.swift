@@ -1,11 +1,9 @@
 import SwiftUI
-import SwiftData
 
 struct BlockSummaryView: View {
-    @Environment(\.modelContext) private var modelContext
     @ObservedObject var viewModel: TimerViewModel
 
-    private let accentColor = Color(hue: 35/360, saturation: 0.8, brightness: 0.55)
+    private let accentColor: Color = .appAccent
 
     var body: some View {
         VStack(spacing: 20) {
@@ -43,14 +41,14 @@ struct BlockSummaryView: View {
                     Spacer()
 
                     Button("Save & Continue") {
-                        viewModel.saveSummary(modelContext: modelContext)
+                        viewModel.saveSummary()
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(accentColor)
                     .fontWeight(.medium)
                 }
 
-                Text("Block saved: \(viewModel.elapsedSeconds / 60) min")
+                Text("Block saved: \(viewModel.lastBlockDurationMinutes) min")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }

@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 import AppKit
-import Combine
 
 enum TimerState: Equatable {
     case idle
@@ -21,8 +20,12 @@ final class TimerViewModel: ObservableObject {
 
     private var timer: Timer?
     private var blockStartTime: Date?
+    private var runSegmentStart: Date?
     private var elapsedSecondsAtPause: Int = 0
+    private var currentBlock: Block?
     private var totalDurationSeconds: Int { selectedDurationMinutes * 60 }
+
+    var modelContext: ModelContext?
 
     init(defaultMinutes: Int = 25) {
         self.selectedDurationMinutes = defaultMinutes
@@ -35,13 +38,19 @@ final class TimerViewModel: ObservableObject {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
-    var elapsedSeconds: Int {
-        totalDurationSeconds - remainingSeconds
+    var wallClockElapsed: Int {
+        guard let segmentStart = runSegmentStart else { return elapsedSecondsAtPause }
+        return elapsedSecondsAtPause + Int(Date().timeIntervalSince(segmentStart))
+    }
+
+    var lastBlockDurationMinutes: Int {
+        currentBlock?.durationMinutes ?? 0
     }
 
     func start() {
         guard timerState == .idle else { return }
         blockStartTime = Date()
+        runSegmentStart = Date()
         elapsedSecondsAtPause = 0
         timerState = .running
         startTimer()
@@ -49,40 +58,40 @@ final class TimerViewModel: ObservableObject {
 
     func pause() {
         guard timerState == .running else { return }
-        elapsedSecondsAtPause = elapsedSeconds
+        elapsedSecondsAtPause = wallClockElapsed
+        runSegmentStart = nil
         stopTimer()
         timerState = .paused
     }
 
     func resume() {
         guard timerState == .paused else { return }
+        runSegmentStart = Date()
         timerState = .running
         startTimer()
     }
 
-    func stop(modelContext: ModelContext) {
+    func stop() {
         stopTimer()
-        let elapsed = elapsedSeconds
-        saveBlock(elapsedSeconds: elapsed, modelContext: modelContext)
-        timerState = .stopped
-        playCompletionSound()
-        showDone = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-            self?.showDone = false
+        let elapsed = wallClockElapsed
+        runSegmentStart = nil
+        if let ctx = modelContext {
+            saveBlock(elapsedSeconds: elapsed, modelContext: ctx)
         }
+        handleCompletion()
     }
 
-    func saveSummary(modelContext: ModelContext) {
-        // Update the most recent block with the summary
-        let descriptor = FetchDescriptor<Block>(sortBy: [SortDescriptor(\.startTime, order: .reverse)])
-        if let blocks = try? modelContext.fetch(descriptor), let latest = blocks.first {
-            latest.summary = summaryText
-            try? modelContext.save()
+    func saveSummary() {
+        if let block = currentBlock, let ctx = modelContext {
+            block.summary = summaryText
+            try? ctx.save()
         }
+        currentBlock = nil
         resetToIdle()
     }
 
     func skipSummary() {
+        currentBlock = nil
         resetToIdle()
     }
 
@@ -116,25 +125,25 @@ final class TimerViewModel: ObservableObject {
 
     private func tick() {
         guard timerState == .running else { return }
-        if remainingSeconds > 0 {
-            remainingSeconds -= 1
-        }
+        let elapsed = wallClockElapsed
+        remainingSeconds = max(totalDurationSeconds - elapsed, 0)
         if remainingSeconds <= 0 {
-            // Timer completed naturally
             stopTimer()
-            let elapsed = totalDurationSeconds
-            timerState = .stopped
-            playCompletionSound()
-            showDone = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                self?.showDone = false
+            runSegmentStart = nil
+            if let ctx = modelContext {
+                saveBlock(elapsedSeconds: totalDurationSeconds, modelContext: ctx)
             }
-            // Block will be saved by the view when it detects the state change
+            handleCompletion()
         }
     }
 
-    func saveBlockOnCompletion(modelContext: ModelContext) {
-        saveBlock(elapsedSeconds: totalDurationSeconds, modelContext: modelContext)
+    private func handleCompletion() {
+        timerState = .stopped
+        playCompletionSound()
+        showDone = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.showDone = false
+        }
     }
 
     private func saveBlock(elapsedSeconds: Int, modelContext: ModelContext) {
@@ -146,6 +155,7 @@ final class TimerViewModel: ObservableObject {
         )
         modelContext.insert(block)
         try? modelContext.save()
+        currentBlock = block
     }
 
     private func playCompletionSound() {

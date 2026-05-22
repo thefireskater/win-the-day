@@ -9,7 +9,7 @@ struct DurationPickerView: View {
     @FocusState private var isCustomFieldFocused: Bool
 
     private let presets = [15, 25, 45, 60]
-    private let accentColor = Color(hue: 35/360, saturation: 0.8, brightness: 0.55)
+    private let accentColor: Color = .appAccent
 
     var body: some View {
         VStack(spacing: 16) {

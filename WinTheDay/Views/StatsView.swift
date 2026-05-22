@@ -5,7 +5,7 @@ struct StatsView: View {
     @EnvironmentObject private var settings: UserSettings
     @Query private var allBlocks: [Block]
 
-    private let accentColor = Color(hue: 35/360, saturation: 0.8, brightness: 0.55)
+    private let accentColor: Color = .appAccent
 
     private var todayBlocks: [Block] {
         let calendar = Calendar.current
