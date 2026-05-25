@@ -90,23 +90,13 @@ struct TimerView: View {
     // MARK: - Objective Field
 
     private var objectiveField: some View {
-        Group {
-            if viewModel.timerState == .running {
-                Text(viewModel.objective.isEmpty ? "" : viewModel.objective)
-                    .font(.system(size: 14))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .frame(height: 32)
-            } else {
-                TextField("What are you working on?", text: $viewModel.objective)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 14))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .frame(height: 32)
-            }
-        }
-        .padding(.horizontal, 24)
+        TextField("What are you working on?", text: $viewModel.objective)
+            .textFieldStyle(.plain)
+            .font(.system(size: 14))
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .frame(height: 32)
+            .padding(.horizontal, 24)
     }
 
     // MARK: - Controls
