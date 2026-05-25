@@ -4,8 +4,7 @@ import SwiftData
 struct BlockLogView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Block.startTime, order: .reverse) private var blocks: [Block]
-    @State private var blockToDelete: Block?
-    @State private var showDeleteConfirmation = false
+    @State private var editingBlock: Block?
 
     var onSwitchToTimer: () -> Void
 
@@ -36,7 +35,16 @@ struct BlockLogView: View {
     }
 
     var body: some View {
-        if blocks.isEmpty {
+        if let block = editingBlock {
+            BlockEditView(block: block, onDelete: {
+                modelContext.delete(block)
+                try? modelContext.save()
+                editingBlock = nil
+            }, onDismiss: {
+                try? modelContext.save()
+                editingBlock = nil
+            })
+        } else if blocks.isEmpty {
             emptyState
         } else {
             ScrollView {
@@ -45,31 +53,14 @@ struct BlockLogView: View {
                         sectionHeader(group.0)
                         ForEach(group.1) { block in
                             blockRow(block)
-                                .contextMenu {
-                                    Button(role: .destructive) {
-                                        blockToDelete = block
-                                        showDeleteConfirmation = true
-                                    } label: {
-                                        Label("Delete Block", systemImage: "trash")
-                                    }
+                                .onTapGesture {
+                                    editingBlock = block
                                 }
                         }
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
-            }
-            .alert("Delete Block?", isPresented: $showDeleteConfirmation) {
-                Button("Cancel", role: .cancel) { blockToDelete = nil }
-                Button("Delete", role: .destructive) {
-                    if let block = blockToDelete {
-                        modelContext.delete(block)
-                        try? modelContext.save()
-                    }
-                    blockToDelete = nil
-                }
-            } message: {
-                Text("This block will be permanently deleted.")
             }
         }
     }
