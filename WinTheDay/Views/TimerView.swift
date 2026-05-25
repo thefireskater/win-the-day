@@ -38,12 +38,7 @@ struct TimerView: View {
 
     @ViewBuilder
     private var timerDisplay: some View {
-        if viewModel.showDone {
-            Text("Done")
-                .font(.system(size: 72, weight: .ultraLight, design: .default))
-                .foregroundStyle(accentColor)
-                .transition(.opacity)
-        } else if isEditingDuration {
+        if isEditingDuration {
             DurationPickerView(
                 selectedMinutes: viewModel.selectedDurationMinutes,
                 onSelect: { minutes in

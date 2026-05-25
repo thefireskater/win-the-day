@@ -16,7 +16,6 @@ final class TimerViewModel: ObservableObject {
     @Published var selectedDurationMinutes: Int
     @Published var objective: String = ""
     @Published var summaryText: String = ""
-    @Published var showDone: Bool = false
 
     private var timer: Timer?
     private var blockStartTime: Date?
@@ -140,10 +139,6 @@ final class TimerViewModel: ObservableObject {
     private func handleCompletion() {
         timerState = .stopped
         playCompletionSound()
-        showDone = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-            self?.showDone = false
-        }
     }
 
     private func saveBlock(elapsedSeconds: Int, modelContext: ModelContext) {
