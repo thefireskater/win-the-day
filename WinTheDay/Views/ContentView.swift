@@ -24,7 +24,7 @@ enum Tab: String, CaseIterable {
 
 struct ContentView: View {
     @EnvironmentObject private var settings: UserSettings
-    @StateObject private var timerViewModel = TimerViewModel()
+    @ObservedObject var timerViewModel: TimerViewModel
     @State private var selectedTab: Tab = .timer
     @State private var showSettings = false
 
