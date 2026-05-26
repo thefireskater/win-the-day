@@ -120,5 +120,6 @@ struct BlockLogView: View {
                 .padding(.top, 8)
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
