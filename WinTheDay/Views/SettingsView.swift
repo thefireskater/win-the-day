@@ -2,25 +2,14 @@ import SwiftUI
 import ServiceManagement
 
 struct SettingsView: View {
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var settings: UserSettings
     @State private var launchAtLogin = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                Text("Settings")
-                    .font(.system(size: 16, weight: .semibold))
-                Spacer()
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 16))
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-            }
+            Text("Settings")
+                .font(.system(size: 16, weight: .semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             settingRow("Default Duration") {
                 Stepper(
@@ -53,7 +42,6 @@ struct SettingsView: View {
             Spacer()
         }
         .padding(24)
-        .frame(width: 350, height: 300)
     }
 
     private func settingRow<Content: View>(_ label: String, @ViewBuilder content: () -> Content) -> some View {

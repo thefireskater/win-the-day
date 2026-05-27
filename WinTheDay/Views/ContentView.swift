@@ -4,12 +4,14 @@ enum Tab: String, CaseIterable {
     case timer
     case log
     case stats
+    case settings
 
     var label: String {
         switch self {
         case .timer: return "Timer"
         case .log: return "Log"
         case .stats: return "Stats"
+        case .settings: return "Settings"
         }
     }
 
@@ -18,6 +20,7 @@ enum Tab: String, CaseIterable {
         case .timer: return "clock"
         case .log: return "list.bullet"
         case .stats: return "chart.bar"
+        case .settings: return "gearshape"
         }
     }
 }
@@ -26,13 +29,11 @@ struct ContentView: View {
     @EnvironmentObject private var settings: UserSettings
     @ObservedObject var timerViewModel: TimerViewModel
     @State private var selectedTab: Tab = .timer
-    @State private var showSettings = false
 
     private let accentColor: Color = .appAccent
 
     var body: some View {
         VStack(spacing: 0) {
-            // Main content
             Group {
                 switch selectedTab {
                 case .timer:
@@ -41,6 +42,8 @@ struct ContentView: View {
                     BlockLogView(onSwitchToTimer: { selectedTab = .timer })
                 case .stats:
                     StatsView()
+                case .settings:
+                    SettingsView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -52,23 +55,8 @@ struct ContentView: View {
                 ForEach(Tab.allCases, id: \.self) { tab in
                     tabButton(tab)
                 }
-
-                Spacer()
-
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 40, height: 36)
-                }
-                .buttonStyle(.plain)
             }
             .padding(.horizontal, 8)
-        }
-        .sheet(isPresented: $showSettings) {
-            SettingsView()
         }
         .onAppear {
             timerViewModel.setDuration(minutes: settings.defaultDurationMinutes)
