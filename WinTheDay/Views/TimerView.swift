@@ -85,12 +85,12 @@ struct TimerView: View {
     // MARK: - Objective Field
 
     private var objectiveField: some View {
-        TextField("What are you working on?", text: $viewModel.objective)
+        TextField("What are you working on?", text: $viewModel.objective, axis: .vertical)
             .textFieldStyle(.plain)
             .font(.system(size: 14))
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
-            .frame(height: 32)
+            .lineLimit(1...4)
             .padding(.horizontal, 24)
     }
 
