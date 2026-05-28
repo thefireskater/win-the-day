@@ -47,6 +47,7 @@ struct ContentView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .id(selectedTab)
 
             Divider()
 
