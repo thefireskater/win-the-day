@@ -37,7 +37,7 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .timer:
-                    TimerView(viewModel: timerViewModel)
+                    TimerView(viewModel: timerViewModel, onBlockComplete: { selectedTab = .log })
                 case .log:
                     BlockLogView(onSwitchToTimer: { selectedTab = .timer })
                 case .stats:

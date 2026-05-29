@@ -5,6 +5,7 @@ struct TimerView: View {
     @EnvironmentObject private var settings: UserSettings
     @Environment(\.modelContext) private var modelContext
     @ObservedObject var viewModel: TimerViewModel
+    var onBlockComplete: () -> Void = {}
     @State private var isEditingDuration = false
 
     private let accentColor: Color = .appAccent
@@ -14,7 +15,7 @@ struct TimerView: View {
             Spacer()
 
             if viewModel.timerState == .stopped {
-                BlockSummaryView(viewModel: viewModel)
+                BlockSummaryView(viewModel: viewModel, onComplete: onBlockComplete)
             } else {
                 timerDisplay
                 Spacer().frame(height: 32)

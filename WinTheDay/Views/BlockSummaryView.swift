@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BlockSummaryView: View {
     @ObservedObject var viewModel: TimerViewModel
+    var onComplete: () -> Void
 
     private let accentColor: Color = .appAccent
 
@@ -42,6 +43,7 @@ struct BlockSummaryView: View {
             HStack {
                 Button("Skip") {
                     viewModel.skipSummary()
+                    onComplete()
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
@@ -50,6 +52,7 @@ struct BlockSummaryView: View {
 
                 Button("Save & Continue") {
                     viewModel.saveSummary()
+                    onComplete()
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(accentColor)
