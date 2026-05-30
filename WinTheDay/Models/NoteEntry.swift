@@ -10,7 +10,7 @@ enum NoteType: String, Codable, CaseIterable {
         switch self {
         case .win: return "Win"
         case .thought: return "Thought"
-        case .todo: return "Todo"
+        case .todo: return "Later"
         }
     }
 
