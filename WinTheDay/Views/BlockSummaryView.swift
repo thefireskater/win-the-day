@@ -57,7 +57,7 @@ struct BlockSummaryView: View {
                     )
                     .overlay(alignment: .topLeading) {
                         if viewModel.summaryText.isEmpty {
-                            Text("What did you accomplish?")
+                            Text("How did it go?")
                                 .font(.system(size: 14))
                                 .foregroundStyle(.tertiary)
                                 .padding(.leading, 13)
