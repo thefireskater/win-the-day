@@ -16,6 +16,9 @@ final class TimerViewModel: ObservableObject {
     @Published var selectedDurationMinutes: Int
     @Published var objective: String = ""
     @Published var summaryText: String = ""
+    @Published var noteText: String = ""
+    @Published var selectedNoteType: NoteType = .win
+    @Published var sessionNotes: [NoteEntry] = []
 
     private var timer: Timer?
     private var blockStartTime: Date?
@@ -94,6 +97,14 @@ final class TimerViewModel: ObservableObject {
         resetToIdle()
     }
 
+    func addNote() {
+        let trimmed = noteText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let note = NoteEntry(text: trimmed, type: selectedNoteType)
+        sessionNotes.append(note)
+        noteText = ""
+    }
+
     func setDuration(minutes: Int) {
         guard timerState == .idle else { return }
         selectedDurationMinutes = minutes
@@ -103,6 +114,8 @@ final class TimerViewModel: ObservableObject {
     func resetToIdle() {
         summaryText = ""
         objective = ""
+        noteText = ""
+        sessionNotes = []
         remainingSeconds = selectedDurationMinutes * 60
         timerState = .idle
     }
@@ -149,6 +162,10 @@ final class TimerViewModel: ObservableObject {
             objective: objective
         )
         modelContext.insert(block)
+        for note in sessionNotes {
+            note.block = block
+            modelContext.insert(note)
+        }
         try? modelContext.save()
         currentBlock = block
     }

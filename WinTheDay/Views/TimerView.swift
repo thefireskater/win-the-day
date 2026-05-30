@@ -18,10 +18,15 @@ struct TimerView: View {
                 BlockSummaryView(viewModel: viewModel, onComplete: onBlockComplete)
             } else {
                 timerDisplay
-                Spacer().frame(height: 32)
+                Spacer().frame(height: 16)
                 objectiveField
-                Spacer().frame(height: 24)
+                Spacer().frame(height: 12)
                 controlButtons
+
+                if viewModel.timerState == .running || viewModel.timerState == .paused {
+                    Spacer().frame(height: 16)
+                    noteCaptureSection
+                }
             }
 
             Spacer()
@@ -93,6 +98,105 @@ struct TimerView: View {
             .multilineTextAlignment(.center)
             .lineLimit(1...4)
             .padding(.horizontal, 24)
+    }
+
+    // MARK: - Note Capture
+
+    private var noteCaptureSection: some View {
+        VStack(spacing: 8) {
+            // Type pills
+            HStack(spacing: 6) {
+                ForEach(NoteType.allCases, id: \.self) { type in
+                    Button {
+                        viewModel.selectedNoteType = type
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: type.icon)
+                                .font(.system(size: 10))
+                            Text(type.label)
+                                .font(.system(size: 11, weight: .medium))
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Capsule()
+                                .fill(viewModel.selectedNoteType == type ? accentColor : Color.clear)
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(viewModel.selectedNoteType == type ? accentColor : Color.secondary.opacity(0.3), lineWidth: 1)
+                        )
+                        .foregroundStyle(viewModel.selectedNoteType == type ? .white : .secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            // Text field + add button
+            HStack(spacing: 6) {
+                TextField("What just happened?", text: $viewModel.noteText)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 13))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                    .onSubmit {
+                        viewModel.addNote()
+                    }
+
+                Button {
+                    viewModel.addNote()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 28, height: 28)
+                        .background(accentColor)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+            }
+
+            // Entries list
+            if !viewModel.sessionNotes.isEmpty {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(Array(viewModel.sessionNotes.enumerated()), id: \.offset) { _, note in
+                            noteRow(note)
+                        }
+                    }
+                }
+                .frame(maxHeight: 100)
+            }
+        }
+    }
+
+    private func noteRow(_ note: NoteEntry) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: note.type.icon)
+                .font(.system(size: 11))
+                .foregroundStyle(noteColor(for: note.type))
+                .frame(width: 18, height: 18)
+                .background(noteColor(for: note.type).opacity(0.15))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+            Text(note.text)
+                .font(.system(size: 12))
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+            Spacer()
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func noteColor(for type: NoteType) -> Color {
+        switch type {
+        case .win: return .green
+        case .thought: return .blue
+        case .todo: return .orange
+        }
     }
 
     // MARK: - Controls
