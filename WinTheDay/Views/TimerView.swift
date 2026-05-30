@@ -7,6 +7,7 @@ struct TimerView: View {
     @ObservedObject var viewModel: TimerViewModel
     var onBlockComplete: () -> Void = {}
     @State private var isEditingDuration = false
+    @State private var pendingCustomMinutes = ""
 
     private let accentColor: Color = .appAccent
 
@@ -38,6 +39,11 @@ struct TimerView: View {
         .onAppear {
             viewModel.modelContext = modelContext
         }
+        .onChange(of: viewModel.timerState) {
+            if viewModel.timerState != .idle {
+                isEditingDuration = false
+            }
+        }
     }
 
     // MARK: - Timer Display
@@ -51,7 +57,8 @@ struct TimerView: View {
                     viewModel.setDuration(minutes: minutes)
                     isEditingDuration = false
                 },
-                onCancel: { isEditingDuration = false }
+                onCancel: { isEditingDuration = false },
+                customText: $pendingCustomMinutes
             )
         } else {
             Text(viewModel.displayTime)
@@ -205,7 +212,12 @@ struct TimerView: View {
         HStack(spacing: 16) {
             switch viewModel.timerState {
             case .idle:
-                Button(action: { viewModel.start() }) {
+                Button(action: {
+                    if isEditingDuration, let value = Int(pendingCustomMinutes), value > 0, value <= 120 {
+                        viewModel.setDuration(minutes: value)
+                    }
+                    viewModel.start()
+                }) {
                     Label("Start", systemImage: "play.fill")
                         .font(.system(size: 14, weight: .medium))
                 }

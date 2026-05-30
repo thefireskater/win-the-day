@@ -4,8 +4,7 @@ struct DurationPickerView: View {
     let selectedMinutes: Int
     let onSelect: (Int) -> Void
     let onCancel: () -> Void
-
-    @State private var customText: String = ""
+    @Binding var customText: String
     @FocusState private var isCustomFieldFocused: Bool
 
     private let presets = [15, 25, 45, 60]
