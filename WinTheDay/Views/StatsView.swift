@@ -146,7 +146,7 @@ struct StatsView: View {
 
                         Text("\(minutes)/\(settings.dailyGoalMinutes)")
                             .font(.system(size: 11))
-                            .foregroundStyle(minutes >= settings.dailyGoalMinutes && settings.dailyGoalMinutes > 0 ? accentColor : .tertiary)
+                            .foregroundStyle(minutes >= settings.dailyGoalMinutes && settings.dailyGoalMinutes > 0 ? accentColor : Color.secondary)
                             .frame(width: 60, alignment: .trailing)
                     }
                     .frame(height: 20)
