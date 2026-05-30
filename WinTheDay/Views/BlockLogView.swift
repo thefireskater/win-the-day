@@ -3,7 +3,12 @@ import SwiftData
 
 struct BlockLogView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Block.startTime, order: .reverse) private var blocks: [Block]
+    @Query(sort: \Block.startTime, order: .reverse) private var allBlocks: [Block]
+
+    private var blocks: [Block] {
+        let calendar = Calendar.current
+        return allBlocks.filter { calendar.isDateInToday($0.startTime) }
+    }
     @State private var selectedBlock: Block?
     @State private var isEditing = false
 
