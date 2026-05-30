@@ -4,7 +4,8 @@ import SwiftData
 struct BlockLogView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Block.startTime, order: .reverse) private var blocks: [Block]
-    @State private var editingBlock: Block?
+    @State private var selectedBlock: Block?
+    @State private var isEditing = false
 
     var onSwitchToTimer: () -> Void
 
@@ -35,14 +36,25 @@ struct BlockLogView: View {
     }
 
     var body: some View {
-        if let block = editingBlock {
+        if let block = selectedBlock, isEditing {
             BlockEditView(block: block, onDelete: {
                 modelContext.delete(block)
                 try? modelContext.save()
-                editingBlock = nil
+                selectedBlock = nil
+                isEditing = false
             }, onDismiss: {
                 try? modelContext.save()
-                editingBlock = nil
+                isEditing = false
+            })
+        } else if let block = selectedBlock {
+            BlockDetailView(block: block, onEdit: {
+                isEditing = true
+            }, onDelete: {
+                modelContext.delete(block)
+                try? modelContext.save()
+                selectedBlock = nil
+            }, onDismiss: {
+                selectedBlock = nil
             })
         } else if blocks.isEmpty {
             emptyState
@@ -54,7 +66,8 @@ struct BlockLogView: View {
                         ForEach(group.1) { block in
                             blockRow(block)
                                 .onTapGesture {
-                                    editingBlock = block
+                                    selectedBlock = block
+                                    isEditing = false
                                 }
                         }
                     }

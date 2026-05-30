@@ -10,6 +10,7 @@
 		19FE61998B6088A9F8499484 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC501FD7E71E3BF6EFCEF278 /* Block.swift */; };
 		4B2A3C5D6E7F8A9B0C1D2E3F /* NoteEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2A3C5D6E7F8A9B0C1D2E40 /* NoteEntry.swift */; };
 		3A1B2C4D5E6F7A8B9C0D1E2F /* BlockEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1B2C4D5E6F7A8B9C0D1E30 /* BlockEditView.swift */; };
+		5C3D4E5F6A7B8C9D0E1F2A3B /* BlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D4E5F6A7B8C9D0E1F2A3C /* BlockDetailView.swift */; };
 		416DE8C00E896FA39623BBF9 /* BlockSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDF92EF779C7F991653F3DD /* BlockSummaryView.swift */; };
 		436F19AD3E4CFE9D8DE98330 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A46BC8953298906D8C01C5D /* StatsView.swift */; };
 		543833B8002813C7F08EE8E1 /* DurationPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4601B378912FD0D4AA69C5C /* DurationPickerView.swift */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		1A46BC8953298906D8C01C5D /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		3A1B2C4D5E6F7A8B9C0D1E30 /* BlockEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEditView.swift; sourceTree = "<group>"; };
+		5C3D4E5F6A7B8C9D0E1F2A3C /* BlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailView.swift; sourceTree = "<group>"; };
 		4B2A3C5D6E7F8A9B0C1D2E40 /* NoteEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntry.swift; sourceTree = "<group>"; };
 		1AED10405183C5FF608A86E0 /* WinTheDay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WinTheDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26E611520D408B3843CF4ED1 /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModel.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 		6EFE7BB8C2CBF62D48A6BD75 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5C3D4E5F6A7B8C9D0E1F2A3C /* BlockDetailView.swift */,
 				3A1B2C4D5E6F7A8B9C0D1E30 /* BlockEditView.swift */,
 				99B1503DA2579743E4675689 /* BlockLogView.swift */,
 				BDDF92EF779C7F991653F3DD /* BlockSummaryView.swift */,
@@ -163,6 +166,7 @@
 			files = (
 				19FE61998B6088A9F8499484 /* Block.swift in Sources */,
 				3A1B2C4D5E6F7A8B9C0D1E2F /* BlockEditView.swift in Sources */,
+				5C3D4E5F6A7B8C9D0E1F2A3B /* BlockDetailView.swift in Sources */,
 				4B2A3C5D6E7F8A9B0C1D2E3F /* NoteEntry.swift in Sources */,
 				88706B9393830E0ECCEDEDFE /* BlockLogView.swift in Sources */,
 				416DE8C00E896FA39623BBF9 /* BlockSummaryView.swift in Sources */,
