@@ -94,10 +94,64 @@ struct StatsView: View {
         }
     }
 
+    private var currentWeekDays: [(String, Int)] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let weekday = calendar.component(.weekday, from: today)
+        // Start from Monday (weekday 2). Adjust so Monday = 0 offset.
+        let mondayOffset = (weekday + 5) % 7
+        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today) else { return [] }
+
+        let dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        return (0..<7).map { offset in
+            let day = calendar.date(byAdding: .day, value: offset, to: monday)!
+            let dayStart = calendar.startOfDay(for: day)
+            let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+            let minutes = allBlocks
+                .filter { $0.startTime >= dayStart && $0.startTime < dayEnd }
+                .reduce(0) { $0 + $1.durationMinutes }
+            return (dayNames[offset], minutes)
+        }
+    }
+
     private var weekSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("This Week")
                 .font(.system(size: 14, weight: .semibold))
+
+            VStack(spacing: 4) {
+                ForEach(currentWeekDays, id: \.0) { day, minutes in
+                    HStack {
+                        Text(day)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 32, alignment: .leading)
+
+                        GeometryReader { geometry in
+                            let progress = settings.dailyGoalMinutes > 0
+                                ? min(Double(minutes) / Double(settings.dailyGoalMinutes), 1.0)
+                                : 0
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 2)
+                                    .fill(.quaternary)
+                                    .frame(height: 4)
+                                if minutes > 0 {
+                                    RoundedRectangle(cornerRadius: 2)
+                                        .fill(accentColor)
+                                        .frame(width: max(geometry.size.width * progress, 4), height: 4)
+                                }
+                            }
+                        }
+                        .frame(height: 4)
+
+                        Text("\(minutes)/\(settings.dailyGoalMinutes)")
+                            .font(.system(size: 11))
+                            .foregroundStyle(minutes >= settings.dailyGoalMinutes && settings.dailyGoalMinutes > 0 ? accentColor : .tertiary)
+                            .frame(width: 60, alignment: .trailing)
+                    }
+                    .frame(height: 20)
+                }
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Total: \(weekMinutes) min (\(weekBlocks.count) block\(weekBlocks.count == 1 ? "" : "s"))")
@@ -110,6 +164,7 @@ struct StatsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .padding(.top, 4)
         }
     }
 }
