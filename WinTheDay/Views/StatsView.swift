@@ -158,11 +158,6 @@ struct StatsView: View {
                     .font(.system(size: 14))
                     .foregroundStyle(.secondary)
 
-                if !weekBlocks.isEmpty {
-                    Text("Average: \(averageMinutesPerBlock) min/block")
-                        .font(.system(size: 14))
-                        .foregroundStyle(.secondary)
-                }
             }
             .padding(.top, 4)
         }
