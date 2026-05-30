@@ -4,39 +4,44 @@ import SwiftData
 struct BlockLogView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Block.startTime, order: .reverse) private var allBlocks: [Block]
-
-    private var blocks: [Block] {
-        let calendar = Calendar.current
-        return allBlocks.filter { calendar.isDateInToday($0.startTime) }
-    }
+    @State private var selectedDate: Date = Date()
     @State private var selectedBlock: Block?
     @State private var isEditing = false
 
     var onSwitchToTimer: () -> Void
 
-    private func sectionKey(for block: Block) -> String {
+    private let accentColor: Color = .appAccent
+
+    private var weekDays: [(String, Date)] {
         let calendar = Calendar.current
-        if calendar.isDateInToday(block.startTime) {
-            return "Today"
-        } else if calendar.isDateInYesterday(block.startTime) {
-            return "Yesterday"
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            return formatter.string(from: block.startTime)
+        let today = calendar.startOfDay(for: Date())
+        let weekday = calendar.component(.weekday, from: today)
+        let mondayOffset = (weekday + 5) % 7
+        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today) else { return [] }
+        let dayLabels = ["M", "T", "W", "T", "F", "S", "S"]
+        return (0..<7).map { offset in
+            let day = calendar.date(byAdding: .day, value: offset, to: monday)!
+            return (dayLabels[offset], calendar.startOfDay(for: day))
         }
     }
 
-    private var groupedBlocks: [(String, [Block])] {
-        let grouped = Dictionary(grouping: blocks) { sectionKey(for: $0) }
-        var seen = Set<String>()
-        let uniqueOrder = blocks.compactMap { block -> String? in
-            let key = sectionKey(for: block)
-            return seen.insert(key).inserted ? key : nil
-        }
-        return uniqueOrder.compactMap { key in
-            guard let values = grouped[key] else { return nil }
-            return (key, values)
+    private var blocks: [Block] {
+        let calendar = Calendar.current
+        let dayStart = calendar.startOfDay(for: selectedDate)
+        guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
+        return allBlocks.filter { $0.startTime >= dayStart && $0.startTime < dayEnd }
+    }
+
+    private var selectedDayLabel: String {
+        let calendar = Calendar.current
+        if calendar.isDateInToday(selectedDate) {
+            return "Today"
+        } else if calendar.isDateInYesterday(selectedDate) {
+            return "Yesterday"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEEE, MMM d"
+            return formatter.string(from: selectedDate)
         }
     }
 
@@ -61,43 +66,71 @@ struct BlockLogView: View {
             }, onDismiss: {
                 selectedBlock = nil
             })
-        } else if blocks.isEmpty {
-            emptyState
         } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(groupedBlocks, id: \.0) { group in
-                        sectionHeader(group.0)
-                        ForEach(group.1) { block in
-                            blockRow(block)
-                                .onTapGesture {
-                                    selectedBlock = block
-                                    isEditing = false
-                                }
+            VStack(spacing: 0) {
+                // Day picker
+                HStack(spacing: 0) {
+                    ForEach(weekDays, id: \.1) { label, date in
+                        let calendar = Calendar.current
+                        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+                        let dayNum = calendar.component(.day, from: date)
+                        Button {
+                            selectedDate = date
+                        } label: {
+                            VStack(spacing: 2) {
+                                Text(label)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                                Text("\(dayNum)")
+                                    .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
+                                    .foregroundStyle(isSelected ? .white : .primary)
+                                    .frame(width: 28, height: 28)
+                                    .background(
+                                        Circle()
+                                            .fill(isSelected ? accentColor : Color.clear)
+                                    )
+                            }
                         }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-            }
-        }
-    }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
 
-    private var emptyState: some View {
-        VStack(spacing: 16) {
-            Spacer()
-            Image(systemName: "clock")
-                .font(.system(size: 32))
-                .foregroundStyle(.secondary)
-            Text("Start your first block")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.secondary)
-            Button("Go to Timer") {
-                onSwitchToTimer()
+                Divider()
+
+                if blocks.isEmpty {
+                    VStack(spacing: 12) {
+                        Spacer()
+                        Text("No blocks")
+                            .font(.system(size: 14))
+                            .foregroundStyle(.secondary)
+                        if Calendar.current.isDateInToday(selectedDate) {
+                            Button("Go to Timer") {
+                                onSwitchToTimer()
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(accentColor)
+                        }
+                        Spacer()
+                    }
+                } else {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            sectionHeader(selectedDayLabel)
+                            ForEach(blocks) { block in
+                                blockRow(block)
+                                    .onTapGesture {
+                                        selectedBlock = block
+                                        isEditing = false
+                                    }
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                }
             }
-            .buttonStyle(.plain)
-            .foregroundStyle(Color.appAccent)
-            Spacer()
         }
     }
 
