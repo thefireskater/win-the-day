@@ -22,6 +22,8 @@ struct BlockLogView: View {
     @State private var isEditing = false
     @State private var noteText = ""
     @State private var noteType: NoteType = .win
+    @State private var editingNoteId: PersistentIdentifier?
+    @State private var editingNoteText = ""
 
     var onSwitchToTimer: () -> Void
 
@@ -223,31 +225,104 @@ struct BlockLogView: View {
     }
 
     private func standaloneNoteRow(_ note: NoteEntry) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: note.type.icon)
-                .font(.system(size: 11))
-                .foregroundStyle(noteColor(for: note.type))
-                .frame(width: 20, height: 20)
-                .background(noteColor(for: note.type).opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-            VStack(alignment: .leading, spacing: 2) {
-                Text(note.text)
-                    .font(.system(size: 13))
-                    .foregroundStyle(.primary)
-                Text(note.createdAt, format: .dateTime.hour().minute())
-                    .font(.system(size: 11))
-                    .foregroundStyle(.tertiary)
+        let isEditing = editingNoteId == note.persistentModelID
+        return VStack(alignment: .leading, spacing: 4) {
+            if isEditing {
+                // Type picker
+                HStack(spacing: 6) {
+                    ForEach(NoteType.allCases, id: \.self) { type in
+                        Button {
+                            note.type = type
+                            try? modelContext.save()
+                        } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: type.icon)
+                                    .font(.system(size: 9))
+                                Text(type.label)
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(note.type == type ? noteColor(for: type) : Color.clear)
+                            )
+                            .overlay(
+                                Capsule()
+                                    .stroke(note.type == type ? noteColor(for: type) : Color.secondary.opacity(0.3), lineWidth: 1)
+                            )
+                            .foregroundStyle(note.type == type ? .white : .secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                // Editable text
+                HStack(spacing: 6) {
+                    TextField("Note", text: $editingNoteText)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 13))
+                        .padding(6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.quaternary.opacity(0.5))
+                        )
+                        .onSubmit {
+                            note.text = editingNoteText
+                            try? modelContext.save()
+                            editingNoteId = nil
+                        }
+
+                    Button("Done") {
+                        note.text = editingNoteText
+                        try? modelContext.save()
+                        editingNoteId = nil
+                    }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(accentColor)
+                }
+
+                HStack {
+                    Text(note.createdAt, format: .dateTime.hour().minute())
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                    Spacer()
+                    Button {
+                        modelContext.delete(note)
+                        try? modelContext.save()
+                        editingNoteId = nil
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .font(.system(size: 11))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.red)
+                }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: note.type.icon)
+                        .font(.system(size: 11))
+                        .foregroundStyle(noteColor(for: note.type))
+                        .frame(width: 20, height: 20)
+                        .background(noteColor(for: note.type).opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(note.text)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.primary)
+                        Text(note.createdAt, format: .dateTime.hour().minute())
+                            .font(.system(size: 11))
+                            .foregroundStyle(.tertiary)
+                    }
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    editingNoteId = note.persistentModelID
+                    editingNoteText = note.text
+                }
             }
-            Spacer()
-            Button {
-                modelContext.delete(note)
-                try? modelContext.save()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 9))
-                    .foregroundStyle(.tertiary)
-            }
-            .buttonStyle(.plain)
         }
         .padding(.vertical, 6)
     }
