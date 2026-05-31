@@ -1,18 +1,6 @@
 import SwiftUI
 import SwiftData
 
-private enum Either: Identifiable {
-    case block(Block)
-    case note(NoteEntry)
-
-    var id: String {
-        switch self {
-        case .block(let b): return "block-\(b.id)"
-        case .note(let n): return "note-\(n.id)"
-        }
-    }
-}
-
 struct BlockLogView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Block.startTime, order: .reverse) private var allBlocks: [Block]
@@ -42,24 +30,18 @@ struct BlockLogView: View {
         }
     }
 
-    private var blocks: [Block] {
+    private func blocksForDate(_ date: Date) -> [Block] {
         let calendar = Calendar.current
-        let dayStart = calendar.startOfDay(for: selectedDate)
+        let dayStart = calendar.startOfDay(for: date)
         guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
         return allBlocks.filter { $0.startTime >= dayStart && $0.startTime < dayEnd }
     }
 
-    private var standaloneNotes: [NoteEntry] {
+    private func standaloneNotesForDate(_ date: Date) -> [NoteEntry] {
         let calendar = Calendar.current
-        let dayStart = calendar.startOfDay(for: selectedDate)
+        let dayStart = calendar.startOfDay(for: date)
         guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
         return allNotes.filter { $0.block == nil && $0.createdAt >= dayStart && $0.createdAt < dayEnd }
-    }
-
-    private var timelineItems: [(Date, Either)] {
-        let blockItems = blocks.map { (date: $0.startTime, item: Either.block($0)) }
-        let noteItems = standaloneNotes.map { (date: $0.createdAt, item: Either.note($0)) }
-        return (blockItems + noteItems).sorted { $0.0 > $1.0 }
     }
 
     private var selectedDayLabel: String {
@@ -176,7 +158,10 @@ struct BlockLogView: View {
 
                 Divider()
 
-                if timelineItems.isEmpty {
+                let dayBlocks = blocksForDate(selectedDate)
+                let dayNotes = standaloneNotesForDate(selectedDate)
+
+                if dayBlocks.isEmpty && dayNotes.isEmpty {
                     VStack(spacing: 12) {
                         Spacer()
                         Text("No entries")
@@ -193,18 +178,16 @@ struct BlockLogView: View {
                     }
                 } else {
                     ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 0) {
-                            ForEach(timelineItems, id: \.1.id) { _, item in
-                                switch item {
-                                case .block(let block):
-                                    blockRow(block)
-                                        .onTapGesture {
-                                            selectedBlock = block
-                                            isEditing = false
-                                        }
-                                case .note(let note):
-                                    standaloneNoteRow(note)
-                                }
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(dayBlocks) { block in
+                                blockRow(block)
+                                    .onTapGesture {
+                                        selectedBlock = block
+                                        isEditing = false
+                                    }
+                            }
+                            ForEach(dayNotes) { note in
+                                standaloneNoteRow(note)
                             }
                         }
                         .padding(.horizontal, 24)

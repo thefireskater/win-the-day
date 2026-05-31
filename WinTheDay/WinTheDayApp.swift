@@ -9,7 +9,10 @@ struct WinTheDayApp: App {
 
     init() {
         do {
-            modelContainer = try ModelContainer(for: Block.self, NoteEntry.self)
+            modelContainer = try ModelContainer(
+                for: Block.self, NoteEntry.self,
+                migrationPlan: WinTheDayMigrationPlan.self
+            )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
