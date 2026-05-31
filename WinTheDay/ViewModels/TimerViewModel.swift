@@ -21,6 +21,7 @@ final class TimerViewModel: ObservableObject {
     @Published var sessionNotes: [NoteEntry] = []
 
     private var timer: Timer?
+    private var completionSound: NSSound?
     private var blockStartTime: Date?
     private var runSegmentStart: Date?
     private var elapsedSecondsAtPause: Int = 0
@@ -84,6 +85,7 @@ final class TimerViewModel: ObservableObject {
     }
 
     func saveSummary() {
+        stopSound()
         if let block = currentBlock, let ctx = modelContext {
             block.summary = summaryText
             try? ctx.save()
@@ -93,6 +95,7 @@ final class TimerViewModel: ObservableObject {
     }
 
     func skipSummary() {
+        stopSound()
         currentBlock = nil
         resetToIdle()
     }
@@ -170,7 +173,19 @@ final class TimerViewModel: ObservableObject {
         currentBlock = block
     }
 
+    var isSoundPlaying: Bool {
+        completionSound?.isPlaying ?? false
+    }
+
+    func stopSound() {
+        completionSound?.stop()
+        completionSound = nil
+    }
+
     private func playCompletionSound() {
-        NSSound(named: "Glass")?.play()
+        let journeyPath = "/System/Library/PrivateFrameworks/ToneLibrary.framework/Versions/A/Resources/Ringtones/Journey-EncoreInfinitum.m4r"
+        let sound = NSSound(contentsOf: URL(fileURLWithPath: journeyPath), byReference: true) ?? NSSound(named: "Glass")
+        completionSound = sound
+        sound?.play()
     }
 }

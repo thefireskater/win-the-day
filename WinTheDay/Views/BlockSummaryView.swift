@@ -3,6 +3,7 @@ import SwiftUI
 struct BlockSummaryView: View {
     @ObservedObject var viewModel: TimerViewModel
     var onComplete: () -> Void
+    @FocusState private var isSummaryFocused: Bool
 
     private let accentColor: Color = .appAccent
 
@@ -64,6 +65,13 @@ struct BlockSummaryView: View {
                                 .padding(.top, 12)
                                 .allowsHitTesting(false)
                         }
+                    }
+                    .focused($isSummaryFocused)
+                    .onChange(of: isSummaryFocused) {
+                        if isSummaryFocused { viewModel.stopSound() }
+                    }
+                    .onChange(of: viewModel.summaryText) {
+                        viewModel.stopSound()
                     }
 
                 HStack {
