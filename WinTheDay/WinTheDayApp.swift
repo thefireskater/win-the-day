@@ -8,10 +8,18 @@ struct WinTheDayApp: App {
     let modelContainer: ModelContainer
 
     init() {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let storeDir = appSupport.appendingPathComponent("WinTheDay", isDirectory: true)
+        try? FileManager.default.createDirectory(at: storeDir, withIntermediateDirectories: true)
+        let storeURL = storeDir.appendingPathComponent("WinTheDay.store")
+
+        let schema = Schema([Block.self, NoteEntry.self])
+        let config = ModelConfiguration(schema: schema, url: storeURL)
         do {
             modelContainer = try ModelContainer(
-                for: Block.self, NoteEntry.self,
-                migrationPlan: WinTheDayMigrationPlan.self
+                for: schema,
+                migrationPlan: WinTheDayMigrationPlan.self,
+                configurations: [config]
             )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
