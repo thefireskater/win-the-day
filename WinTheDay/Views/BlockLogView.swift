@@ -1,6 +1,13 @@
 import SwiftUI
 import SwiftData
 
+private struct TimelineItem: Identifiable {
+    let id: String
+    let date: Date
+    let block: Block?
+    let note: NoteEntry?
+}
+
 struct BlockLogView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Block.startTime, order: .reverse) private var allBlocks: [Block]
@@ -158,10 +165,9 @@ struct BlockLogView: View {
 
                 Divider()
 
-                let dayBlocks = blocksForDate(selectedDate)
-                let dayNotes = standaloneNotesForDate(selectedDate)
+                let items = timelineItemsForDate(selectedDate)
 
-                if dayBlocks.isEmpty && dayNotes.isEmpty {
+                if items.isEmpty {
                     VStack(spacing: 12) {
                         Spacer()
                         Text("No entries")
@@ -179,15 +185,16 @@ struct BlockLogView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 0) {
-                            ForEach(dayBlocks) { block in
-                                blockRow(block)
-                                    .onTapGesture {
-                                        selectedBlock = block
-                                        isEditing = false
-                                    }
-                            }
-                            ForEach(dayNotes) { note in
-                                standaloneNoteRow(note)
+                            ForEach(items) { item in
+                                if let block = item.block {
+                                    blockRow(block)
+                                        .onTapGesture {
+                                            selectedBlock = block
+                                            isEditing = false
+                                        }
+                                } else if let note = item.note {
+                                    standaloneNoteRow(note)
+                                }
                             }
                         }
                         .padding(.horizontal, 24)
@@ -196,6 +203,14 @@ struct BlockLogView: View {
                 }
             }
         }
+    }
+
+    private func timelineItemsForDate(_ date: Date) -> [TimelineItem] {
+        let blocks = blocksForDate(date)
+        let notes = standaloneNotesForDate(date)
+        let blockItems = blocks.map { TimelineItem(id: "b-\($0.persistentModelID)", date: $0.startTime, block: $0, note: nil) }
+        let noteItems = notes.map { TimelineItem(id: "n-\($0.persistentModelID)", date: $0.createdAt, block: nil, note: $0) }
+        return (blockItems + noteItems).sorted { $0.date > $1.date }
     }
 
     private func addStandaloneNote() {
