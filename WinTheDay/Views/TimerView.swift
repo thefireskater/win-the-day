@@ -171,7 +171,7 @@ struct TimerView: View {
             if !viewModel.sessionNotes.isEmpty {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 4) {
-                        ForEach(Array(viewModel.sessionNotes.enumerated()), id: \.offset) { _, note in
+                        ForEach(Array(viewModel.sessionNotes.reversed().enumerated()), id: \.offset) { _, note in
                             noteRow(note)
                         }
                     }
