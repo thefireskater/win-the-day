@@ -170,32 +170,53 @@ struct TimerView: View {
             // Entries list
             if !viewModel.sessionNotes.isEmpty {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 0) {
                         ForEach(Array(viewModel.sessionNotes.reversed().enumerated()), id: \.offset) { _, note in
                             noteRow(note)
                         }
                     }
                 }
-                .frame(maxHeight: 100)
+                .frame(maxHeight: 120)
             }
         }
     }
 
     private func noteRow(_ note: NoteEntry) -> some View {
+        VStack(spacing: 0) {
+        Divider()
         HStack(alignment: .top, spacing: 8) {
-            Image(systemName: note.type.icon)
-                .font(.system(size: 11))
-                .foregroundStyle(noteColor(for: note.type))
-                .frame(width: 18, height: 18)
-                .background(noteColor(for: note.type).opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+            Button {
+                let allTypes = NoteType.allCases
+                if let index = allTypes.firstIndex(of: note.type) {
+                    note.type = allTypes[(index + 1) % allTypes.count]
+                }
+            } label: {
+                Image(systemName: note.type.icon)
+                    .font(.system(size: 11))
+                    .foregroundStyle(noteColor(for: note.type))
+                    .frame(width: 18, height: 18)
+                    .background(noteColor(for: note.type).opacity(0.15))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+            }
+            .buttonStyle(.plain)
+
             Text(note.text)
                 .font(.system(size: 12))
                 .foregroundStyle(.primary)
                 .lineLimit(2)
             Spacer()
+
+            Button {
+                viewModel.sessionNotes.removeAll { $0 === note }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 9))
+                    .foregroundStyle(.tertiary)
+            }
+            .buttonStyle(.plain)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 8)
+        }
     }
 
     private func noteColor(for type: NoteType) -> Color {
