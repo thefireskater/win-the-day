@@ -134,6 +134,7 @@ struct TimerView: View {
                                 .stroke(viewModel.selectedNoteType == type ? accentColor : Color.secondary.opacity(0.3), lineWidth: 1)
                         )
                         .foregroundStyle(viewModel.selectedNoteType == type ? .white : .secondary)
+                        .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
                 }

@@ -132,6 +132,7 @@ struct BlockLogView: View {
                                         Circle()
                                             .fill(noteType == type ? noteColor(for: type) : noteColor(for: type).opacity(0.15))
                                     )
+                                    .contentShape(Circle())
                             }
                             .buttonStyle(.plain)
                         }
@@ -250,6 +251,7 @@ struct BlockLogView: View {
                                     .stroke(note.type == type ? noteColor(for: type) : Color.secondary.opacity(0.3), lineWidth: 1)
                             )
                             .foregroundStyle(note.type == type ? .white : .secondary)
+                            .contentShape(Capsule())
                         }
                         .buttonStyle(.plain)
                     }
