@@ -301,12 +301,23 @@ struct BlockLogView: View {
                 }
             } else {
                 HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: note.type.icon)
-                        .font(.system(size: 11))
-                        .foregroundStyle(noteColor(for: note.type))
-                        .frame(width: 20, height: 20)
-                        .background(noteColor(for: note.type).opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                    Button {
+                        let allTypes = NoteType.allCases
+                        if let index = allTypes.firstIndex(of: note.type) {
+                            note.type = allTypes[(index + 1) % allTypes.count]
+                            try? modelContext.save()
+                        }
+                    } label: {
+                        Image(systemName: note.type.icon)
+                            .font(.system(size: 11))
+                            .foregroundStyle(noteColor(for: note.type))
+                            .frame(width: 20, height: 20)
+                            .background(noteColor(for: note.type).opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .contentShape(RoundedRectangle(cornerRadius: 4))
+                    }
+                    .buttonStyle(.plain)
+
                     VStack(alignment: .leading, spacing: 2) {
                         Text(note.text)
                             .font(.system(size: 13))
