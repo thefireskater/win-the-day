@@ -9,7 +9,7 @@ enum Tab: String, CaseIterable {
     var label: String {
         switch self {
         case .timer: return "Timer"
-        case .log: return "Log"
+        case .log: return "Timeline"
         case .stats: return "Stats"
         case .settings: return "Settings"
         }
