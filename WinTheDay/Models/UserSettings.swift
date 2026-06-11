@@ -13,6 +13,6 @@ final class UserSettings: ObservableObject {
         self.defaultDurationMinutes = storedDuration > 0 ? storedDuration : 25
 
         let storedGoal = UserDefaults.standard.integer(forKey: "dailyGoalMinutes")
-        self.dailyGoalMinutes = storedGoal > 0 ? storedGoal : 60
+        self.dailyGoalMinutes = storedGoal > 0 ? storedGoal : 240
     }
 }
