@@ -5,6 +5,7 @@ struct LaterView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \NoteEntry.createdAt, order: .reverse) private var allNotes: [NoteEntry]
     @State private var selectedDate: Date = Date()
+    @State private var orderedItems: [NoteEntry] = []
 
     private let accentColor: Color = .appAccent
 
@@ -25,9 +26,13 @@ struct LaterView: View {
         let calendar = Calendar.current
         let dayStart = calendar.startOfDay(for: date)
         guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
-        return allNotes.filter {
-            $0.type == .todo && $0.createdAt >= dayStart && $0.createdAt < dayEnd
-        }
+        return allNotes
+            .filter { $0.type == .todo && $0.createdAt >= dayStart && $0.createdAt < dayEnd }
+            .sorted { $0.sortOrder < $1.sortOrder }
+    }
+
+    private func refreshItems() {
+        orderedItems = laterNotesForDate(selectedDate)
     }
 
     var body: some View {
@@ -40,6 +45,7 @@ struct LaterView: View {
                     let dayNum = calendar.component(.day, from: date)
                     Button {
                         selectedDate = date
+                        refreshItems()
                     } label: {
                         VStack(spacing: 2) {
                             Text(label)
@@ -64,9 +70,7 @@ struct LaterView: View {
 
             Divider()
 
-            let items = laterNotesForDate(selectedDate)
-
-            if items.isEmpty {
+            if orderedItems.isEmpty {
                 VStack(spacing: 12) {
                     Spacer()
                     Text("No items")
@@ -75,46 +79,51 @@ struct LaterView: View {
                     Spacer()
                 }
             } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(items) { note in
-                            laterRow(note)
-                        }
+                List {
+                    ForEach(orderedItems) { note in
+                        laterRow(note)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+                            .listRowSeparator(.hidden)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 8)
+                    .onMove { from, to in
+                        orderedItems.move(fromOffsets: from, toOffset: to)
+                        for (index, note) in orderedItems.enumerated() {
+                            note.sortOrder = index
+                        }
+                        try? modelContext.save()
+                    }
                 }
+                .listStyle(.plain)
             }
         }
+        .onAppear { refreshItems() }
+        .onChange(of: allNotes.count) { refreshItems() }
     }
 
     private func laterRow(_ note: NoteEntry) -> some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: 10) {
-                Button {
-                    note.completed.toggle()
-                    try? modelContext.save()
-                } label: {
-                    Image(systemName: note.completed ? "checkmark.square.fill" : "square")
-                        .font(.system(size: 16))
-                        .foregroundStyle(note.completed ? accentColor : .secondary)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(note.text)
-                        .font(.system(size: 13))
-                        .foregroundStyle(note.completed ? .secondary : .primary)
-                        .strikethrough(note.completed)
-                    Text(note.createdAt, format: .dateTime.hour().minute())
-                        .font(.system(size: 11))
-                        .foregroundStyle(.tertiary)
-                }
-                Spacer()
+        HStack(alignment: .top, spacing: 10) {
+            Button {
+                note.completed.toggle()
+                try? modelContext.save()
+            } label: {
+                Image(systemName: note.completed ? "checkmark.square.fill" : "square")
+                    .font(.system(size: 16))
+                    .foregroundStyle(note.completed ? accentColor : .secondary)
+                    .contentShape(Rectangle())
             }
-            .padding(.vertical, 8)
-            Divider()
+            .buttonStyle(.plain)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(note.text)
+                    .font(.system(size: 13))
+                    .foregroundStyle(note.completed ? .secondary : .primary)
+                    .strikethrough(note.completed)
+                Text(note.createdAt, format: .dateTime.hour().minute())
+                    .font(.system(size: 11))
+                    .foregroundStyle(.tertiary)
+            }
+            Spacer()
         }
+        .padding(.vertical, 8)
     }
 }

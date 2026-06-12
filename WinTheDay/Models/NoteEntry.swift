@@ -29,13 +29,15 @@ final class NoteEntry {
     var typeRaw: String
     var createdAt: Date
     var completed: Bool = false
+    var sortOrder: Int = 0
     var block: Block?
 
-    init(text: String, type: NoteType, createdAt: Date = Date(), completed: Bool = false, block: Block? = nil) {
+    init(text: String, type: NoteType, createdAt: Date = Date(), completed: Bool = false, sortOrder: Int = 0, block: Block? = nil) {
         self.text = text
         self.typeRaw = type.rawValue
         self.createdAt = createdAt
         self.completed = completed
+        self.sortOrder = sortOrder
         self.block = block
     }
 
