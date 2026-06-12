@@ -14,8 +14,12 @@ struct StatsView: View {
 
     private var weekBlocks: [Block] {
         let calendar = Calendar.current
-        guard let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) else { return [] }
-        return allBlocks.filter { $0.startTime >= weekAgo }
+        let today = calendar.startOfDay(for: Date())
+        let weekday = calendar.component(.weekday, from: today)
+        let mondayOffset = (weekday + 5) % 7
+        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today),
+              let nextMonday = calendar.date(byAdding: .day, value: 7, to: monday) else { return [] }
+        return allBlocks.filter { $0.startTime >= monday && $0.startTime < nextMonday }
     }
 
     private var todayMinutes: Int {
