@@ -3,6 +3,7 @@ import SwiftUI
 enum Tab: String, CaseIterable {
     case timer
     case log
+    case later
     case stats
     case settings
 
@@ -10,6 +11,7 @@ enum Tab: String, CaseIterable {
         switch self {
         case .timer: return "Timer"
         case .log: return "Timeline"
+        case .later: return "Later"
         case .stats: return "Stats"
         case .settings: return "Settings"
         }
@@ -19,6 +21,7 @@ enum Tab: String, CaseIterable {
         switch self {
         case .timer: return "clock"
         case .log: return "list.bullet"
+        case .later: return "tray"
         case .stats: return "chart.bar"
         case .settings: return "gearshape"
         }
@@ -40,6 +43,8 @@ struct ContentView: View {
                     TimerView(viewModel: timerViewModel, onBlockComplete: { selectedTab = .log })
                 case .log:
                     BlockLogView(onSwitchToTimer: { selectedTab = .timer })
+                case .later:
+                    LaterView()
                 case .stats:
                     StatsView()
                 case .settings:

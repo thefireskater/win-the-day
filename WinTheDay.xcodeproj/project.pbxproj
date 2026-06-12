@@ -12,6 +12,7 @@
 		4B2A3C5D6E7F8A9B0C1D2E3F /* NoteEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2A3C5D6E7F8A9B0C1D2E40 /* NoteEntry.swift */; };
 		3A1B2C4D5E6F7A8B9C0D1E2F /* BlockEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1B2C4D5E6F7A8B9C0D1E30 /* BlockEditView.swift */; };
 		5C3D4E5F6A7B8C9D0E1F2A3B /* BlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D4E5F6A7B8C9D0E1F2A3C /* BlockDetailView.swift */; };
+		7E5F6A7B8C9D0E1F2A3B4C5D /* LaterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5F6A7B8C9D0E1F2A3B4C5E /* LaterView.swift */; };
 		416DE8C00E896FA39623BBF9 /* BlockSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDF92EF779C7F991653F3DD /* BlockSummaryView.swift */; };
 		436F19AD3E4CFE9D8DE98330 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A46BC8953298906D8C01C5D /* StatsView.swift */; };
 		543833B8002813C7F08EE8E1 /* DurationPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4601B378912FD0D4AA69C5C /* DurationPickerView.swift */; };
@@ -30,6 +31,7 @@
 		1A46BC8953298906D8C01C5D /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		3A1B2C4D5E6F7A8B9C0D1E30 /* BlockEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEditView.swift; sourceTree = "<group>"; };
 		5C3D4E5F6A7B8C9D0E1F2A3C /* BlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailView.swift; sourceTree = "<group>"; };
+		7E5F6A7B8C9D0E1F2A3B4C5E /* LaterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaterView.swift; sourceTree = "<group>"; };
 		4B2A3C5D6E7F8A9B0C1D2E40 /* NoteEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntry.swift; sourceTree = "<group>"; };
 		6D4E5F6A7B8C9D0E1F2A3B4D /* SchemaVersions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaVersions.swift; sourceTree = "<group>"; };
 		1AED10405183C5FF608A86E0 /* WinTheDay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WinTheDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +88,7 @@
 				A64F57661CE26D156A823F9C /* ContentView.swift */,
 				330B16073321C8BCEEADF464 /* DailyProgressBar.swift */,
 				B4601B378912FD0D4AA69C5C /* DurationPickerView.swift */,
+				7E5F6A7B8C9D0E1F2A3B4C5E /* LaterView.swift */,
 				3360015B35FFD5F4E38993AE /* SettingsView.swift */,
 				1A46BC8953298906D8C01C5D /* StatsView.swift */,
 				95C66C32FD88CDAC0400542E /* TimerView.swift */,
@@ -177,6 +180,7 @@
 				8BE0C9075BC0CA33070E4F8A /* ContentView.swift in Sources */,
 				8FBF1B3E05142D5C66C0C160 /* DailyProgressBar.swift in Sources */,
 				543833B8002813C7F08EE8E1 /* DurationPickerView.swift in Sources */,
+				7E5F6A7B8C9D0E1F2A3B4C5D /* LaterView.swift in Sources */,
 				66310899DC8DAB6E285FC48B /* SettingsView.swift in Sources */,
 				436F19AD3E4CFE9D8DE98330 /* StatsView.swift in Sources */,
 				CFCA33633A805A39B144B03A /* Theme.swift in Sources */,

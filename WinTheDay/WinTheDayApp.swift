@@ -18,7 +18,6 @@ struct WinTheDayApp: App {
         do {
             modelContainer = try ModelContainer(
                 for: schema,
-                migrationPlan: WinTheDayMigrationPlan.self,
                 configurations: [config]
             )
         } catch {
